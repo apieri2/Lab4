@@ -80,7 +80,7 @@ public class Colosseum {
         while (invalidInput) {
             System.out.println("How many hit points will it have? (1-50):");
             int tempHitPoints = myScan.nextInt();
-            if (tempHitPoints <= 1 || tempHitPoints >= MAX_HIT_POINTS) {
+            if (tempHitPoints < 1 || tempHitPoints > MAX_HIT_POINTS) {
                 System.out.println("Sorry. Hit points must be between 1 and 50");
                 continue;
             }
@@ -93,7 +93,7 @@ public class Colosseum {
         while (invalidInput) {
             System.out.println("Enter your attack level (1-49):");
             int tempAttackPoints = myScan.nextInt();
-            if (tempAttackPoints <= 1 || tempAttackPoints >= MAX_HIT_POINTS) {
+            if (tempAttackPoints < 1 || tempAttackPoints >= MAX_HIT_POINTS) {
                 System.out.println("Sorry. Attack points must be between 1 and 50");
                 continue;
             }
@@ -105,7 +105,7 @@ public class Colosseum {
         while (invalidInput) {
             System.out.println("Enter your defense level (1-" + (MAX_HIT_POINTS - tempPokemon.attackLevel) + "):");
             int tempDefensePoints = myScan.nextInt();
-            if (tempDefensePoints <= 1 || tempDefensePoints > MAX_HIT_POINTS - tempPokemon.attackLevel) {
+            if (tempDefensePoints < 1 || tempDefensePoints > MAX_HIT_POINTS - tempPokemon.attackLevel) {
                 System.out.println("Sorry. Defense points must be between 1 and "
                         + (MAX_HIT_POINTS - tempPokemon.attackLevel));
                 continue;
@@ -218,36 +218,53 @@ public class Colosseum {
      */
     public static void main(final String[] unused) {
         myScan = new Scanner(System.in);
-        initializePokemon();
-        determineOrder();
-        System.out.println("");
-        boolean ifWinner = false;
 
-        /*
-         * Let the battle begin!
-         */
-        for (int i = 0; i < MAX_NUM_ROUNDS && !ifWinner; i++) {
+        boolean playAgain = true;
+        while (playAgain) {
+            initializePokemon();
+            determineOrder();
             System.out.println("");
-            System.out.println("Round " + (i + 1) + "!");
-            System.out.println("");
+            boolean ifWinner = false;
 
-            ifWinner = firstPokemon.attack(secondPokemon);
-            if (!ifWinner) {
-                ifWinner = secondPokemon.attack(firstPokemon);
+            /*
+             * Let the battle begin!
+             */
+            for (int i = 0; i < MAX_NUM_ROUNDS && !ifWinner; i++) {
+                System.out.println("");
+                System.out.println("Round " + (i + 1) + "!");
+                System.out.println("");
+
+                ifWinner = firstPokemon.attack(secondPokemon);
                 if (!ifWinner) {
-                    printWhoIsAhead();
-                }
+                    ifWinner = secondPokemon.attack(firstPokemon);
+                    if (!ifWinner) {
+                        printWhoIsAhead();
+                    }
 
+                }
+            }
+            System.out.println("");
+
+            if (!ifWinner) {
+                System.out.println("It's a tie!");
+            } else {
+                determineWinner();
+            }
+            boolean invalidInput = true;
+            while (invalidInput) {
+                System.out.println("Would you like to play again? Y/n");
+                String answer = myScan.next();
+                if (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("Yes")) {
+                    invalidInput = false;
+                    playAgain = true;
+                } else if (answer.equalsIgnoreCase("N") || answer.equalsIgnoreCase("No")) {
+                    invalidInput = false;
+                    playAgain = false;
+                } else {
+                    continue;
+                }
             }
         }
-        System.out.println("");
-
-        if (!ifWinner) {
-            System.out.println("It's a tie!");
-        } else {
-            determineWinner();
-        }
-
         myScan.close();
     }
 }
